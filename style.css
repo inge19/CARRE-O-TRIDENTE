@@ -1,0 +1,30 @@
+ body { font-family: Arial, sans-serif;
+     max-width: 800px;
+    background-image: url(/98a7fd78b6c2d36ae260dff794ad73fd.gif);
+     margin: 20px auto;
+    padding: 0 15px;
+    color: aliceblue;
+ }
+   .fon{
+    background-color: rgba(33, 39, 39, 0.555);
+        border-radius: 20px;
+
+   }
+
+  h1 { font-size: 22px; }
+
+  h2 { font-size: 18px; margin-top: 30px; }
+  
+  label { display: block; margin-top: 10px; font-size: 14px; }
+  input, select { width: 100px; padding: 6px; margin-top: 4px; }
+  input.invalid {background-color: rgb(17, 17, 70); border: 2px solid red; }
+  .error { color: red; font-size: 12px; }
+  button { margin-top: 12px; padding: 8px 14px; cursor: pointer; }
+  #resultado { font-size: 18px; font-weight: bold; margin: 15px 0; }
+
+  table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  
+  th, td { border: 1px solid #ccc; padding: 6px; text-align: left; font-size: 14px; border-radius: 20px;}
+  .ok { color: green; }
+  .bad { color: red; }
+  #buscador { margin-top: 20px; }

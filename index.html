@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Taller de Electrónica e Instrumental</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+ <div class="fon"> 
+<h1>Taller de Electrónica e Instrumental</h1>
+
+<div id="resultado">% que requieren recalibración: --</div>
+
+<h2>Agregar instrumento</h2>
+<form id="form-instrumento">
+
+  <label>Tipo de instrumento</label>
+  <select id="tipo">
+    <option value="base">Instrumento genérico</option>
+    <option value="multimetro">Multímetro digital</option>
+  </select>
+
+  <label>Nombre</label>
+  <input type="text" id="nombre">
+  <div class="error" id="error-nombre"></div>
+
+  <label>Ubicación</label>
+  <input type="text" id="ubicacion">
+  <div class="error" id="error-ubicacion"></div>
+
+  <label><input type="checkbox" id="calibrado" style="width:auto"> Está calibrado</label>
+
+  <div id="campos-multimetro" style="display:none">
+    <label>Rango máximo (Volts)</label>
+    <input type="number" id="rango">
+    <div class="error" id="error-rango"></div>
+
+    <label><input type="checkbox" id="autorango" style="width:auto"> Tiene auto-rango</label>
+  </div>
+
+  <button type="submit">Agregar</button>
+</form>
+
+<h2>Instrumentos</h2>
+<input type="text" id="buscador" placeholder="Buscar por nombre o ubicación...">
+
+<table>
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th>Ubicación</th>
+      <th>Datos</th>
+      <th>Estado</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody id="tabla-instrumentos"></tbody>
+</table>
+</div>
+
+<script src="scip.js"></script>
+</body>
+</html>
