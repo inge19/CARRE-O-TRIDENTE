@@ -383,3 +383,30 @@ document.addEventListener("DOMContentLoaded", function () {
 
   mostrarTodo();
 });
+
+
+// Mostrar el indicador de carga
+function mostrarLoader() {
+  document.getElementById("loader").hidden = false;
+  document.getElementById("error-api").hidden = true;
+}
+
+// Mostrar los datos recibidos de la API
+function mostrarDatosAmbiente(temperatura, humedad) {
+  document.getElementById("loader").hidden = true;
+
+  document.getElementById("temperatura").textContent = temperatura;
+  document.getElementById("humedad").textContent = humedad;
+
+  if (humedad > 65) {
+    document.getElementById("aviso-humedad").hidden = false;
+  } else {
+    document.getElementById("aviso-humedad").hidden = true;
+  }
+}
+
+// Mostrar un mensaje si ocurre un error
+function mostrarErrorAmbiente() {
+  document.getElementById("loader").hidden = true;
+  document.getElementById("error-api").hidden = false;
+}
