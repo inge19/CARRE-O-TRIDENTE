@@ -178,6 +178,83 @@ class ColeccionInstrumentos {
 const coleccion = new ColeccionInstrumentos();
 let siguienteId = 1;
 
+// ============================================================
+// SERVICIO: ApiClient
+// Se encarga de hablar con el servidor (API REST).
+// ============================================================
+
+class ApiClient {
+
+  #baseUrl;
+
+  constructor(baseUrl) {
+    this.#baseUrl = baseUrl;
+  }
+
+  // Método genérico: todas las peticiones pasan por acá.
+  // async = devuelve una Promesa; await = espera la respuesta.
+  async #pedir(ruta, opciones = {}) {
+
+    // Si el servidor no responde en 8 segundos, cancela.
+    const controlador = new AbortController();
+    const timeout = setTimeout(() => controlador.abort(), 8000);
+
+    try {
+      const respuesta = await fetch(this.#baseUrl + ruta, {
+        headers: { "Content-Type": "application/json" },
+        signal: controlador.signal,
+        ...opciones
+      });
+
+      // fetch NO lanza error con 404 o 500, hay que revisarlo a mano.
+      if (!respuesta.ok) {
+        throw new Error("Error del servidor: " + respuesta.status);
+      }
+
+      // DELETE puede devolver cuerpo vacío.
+      const texto = await respuesta.text();
+      return texto ? JSON.parse(texto) : null;
+
+    } catch (error) {
+      if (error.name === "AbortError") {
+        throw new Error("El servidor tardó demasiado en responder.");
+      }
+      throw error;
+
+    } finally {
+      // Se ejecuta siempre, haya error o no.
+      clearTimeout(timeout);
+    }
+  }
+
+  // GET: obtener todos
+  obtenerTodos() {
+    return this.#pedir("/instrumentos");
+  }
+
+  // POST: crear uno
+  crear(instrumento) {
+    return this.#pedir("/instrumentos", {
+      method: "POST",
+      body: JSON.stringify(instrumento.toJSON())
+    });
+  }
+
+  // PUT: actualizar uno
+  actualizar(instrumento) {
+    return this.#pedir("/instrumentos/" + instrumento.id, {
+      method: "PUT",
+      body: JSON.stringify(instrumento.toJSON())
+    });
+  }
+
+  // DELETE: eliminar uno
+  eliminar(id) {
+    return this.#pedir("/instrumentos/" + id, { method: "DELETE" });
+  }
+}
+
+
 const form = document.getElementById("form-instrumento");
 const tipoSelect = document.getElementById("tipo");
 const camposMultimetro = document.getElementById("campos-multimetro");
