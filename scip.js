@@ -308,15 +308,17 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 
+
 // Mostrar el indicador de carga
 function mostrarLoader() {
   document.getElementById("loader").hidden = false;
   document.getElementById("error-api").hidden = true;
 }
 
-// Mostrar los datos recibidos de la API
+// Mostrar los datos del ambiente
 function mostrarDatosAmbiente(temperatura, humedad) {
   document.getElementById("loader").hidden = true;
+  document.getElementById("error-api").hidden = true;
 
   document.getElementById("temperatura").textContent = temperatura;
   document.getElementById("humedad").textContent = humedad;
@@ -328,7 +330,7 @@ function mostrarDatosAmbiente(temperatura, humedad) {
   }
 }
 
-// Mostrar un mensaje si ocurre un error
+// Mostrar mensaje de error
 function mostrarErrorAmbiente() {
   document.getElementById("loader").hidden = true;
   document.getElementById("error-api").hidden = false;
