@@ -410,3 +410,73 @@ function mostrarErrorAmbiente() {
   document.getElementById("loader").hidden = true;
   document.getElementById("error-api").hidden = false;
 }
+// ============================================================
+// INTEGRANTE C: EVENTOS ASÍNCRONOS Y CONTROL DE FLUJO
+// ============================================================
+
+const api = new ApiClient("http://localhost:3000");
+
+// Consultar instrumentos a la API
+async function consultarInstrumentosAPI() {
+
+  const boton = document.getElementById("btn-consultar-api");
+  const mensaje = document.getElementById("mensaje-api");
+
+  // Evitar peticiones duplicadas
+  if (boton.disabled) return;
+
+  boton.disabled = true;
+  boton.textContent = "Cargando...";
+
+  mostrarLoader();
+
+  try {
+
+    // Esperar la respuesta del servidor
+    const datos = await api.obtenerTodos();
+
+    // Validar los datos recibidos
+    if (!Array.isArray(datos)) {
+      throw new Error("Los datos recibidos no son válidos.");
+    }
+
+    mensaje.textContent =
+      "Instrumentos recibidos: " + datos.length;
+
+    document.getElementById("loader").hidden = true;
+
+  } catch (error) {
+
+    // Mostrar errores
+    mostrarErrorAmbiente();
+    mensaje.textContent = "Error: " + error.message;
+
+  } finally {
+
+    // Habilitar nuevamente el botón
+    boton.disabled = false;
+    boton.textContent = "Consultar API";
+
+  }
+}
+
+
+// Crear botón y asignar evento
+document.addEventListener("DOMContentLoaded", function () {
+
+  const boton = document.createElement("button");
+
+  boton.id = "btn-consultar-api";
+  boton.type = "button";
+  boton.textContent = "Consultar API";
+
+  const mensaje = document.createElement("p");
+  mensaje.id = "mensaje-api";
+
+  document.body.appendChild(boton);
+  document.body.appendChild(mensaje);
+
+  // Evento que inicia la petición
+  boton.addEventListener("click", consultarInstrumentosAPI);
+
+});
