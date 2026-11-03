@@ -178,6 +178,83 @@ class ColeccionInstrumentos {
 const coleccion = new ColeccionInstrumentos();
 let siguienteId = 1;
 
+// ============================================================
+// SERVICIO: ApiClient
+// Se encarga de hablar con el servidor (API REST).
+// ============================================================
+
+class ApiClient {
+
+  #baseUrl;
+
+  constructor(baseUrl) {
+    this.#baseUrl = baseUrl;
+  }
+
+  // Método genérico: todas las peticiones pasan por acá.
+  // async = devuelve una Promesa; await = espera la respuesta.
+  async #pedir(ruta, opciones = {}) {
+
+    // Si el servidor no responde en 8 segundos, cancela.
+    const controlador = new AbortController();
+    const timeout = setTimeout(() => controlador.abort(), 8000);
+
+    try {
+      const respuesta = await fetch(this.#baseUrl + ruta, {
+        headers: { "Content-Type": "application/json" },
+        signal: controlador.signal,
+        ...opciones
+      });
+
+      // fetch NO lanza error con 404 o 500, hay que revisarlo a mano.
+      if (!respuesta.ok) {
+        throw new Error("Error del servidor: " + respuesta.status);
+      }
+
+      // DELETE puede devolver cuerpo vacío.
+      const texto = await respuesta.text();
+      return texto ? JSON.parse(texto) : null;
+
+    } catch (error) {
+      if (error.name === "AbortError") {
+        throw new Error("El servidor tardó demasiado en responder.");
+      }
+      throw error;
+
+    } finally {
+      // Se ejecuta siempre, haya error o no.
+      clearTimeout(timeout);
+    }
+  }
+
+  // GET: obtener todos
+  obtenerTodos() {
+    return this.#pedir("/instrumentos");
+  }
+
+  // POST: crear uno
+  crear(instrumento) {
+    return this.#pedir("/instrumentos", {
+      method: "POST",
+      body: JSON.stringify(instrumento.toJSON())
+    });
+  }
+
+  // PUT: actualizar uno
+  actualizar(instrumento) {
+    return this.#pedir("/instrumentos/" + instrumento.id, {
+      method: "PUT",
+      body: JSON.stringify(instrumento.toJSON())
+    });
+  }
+
+  // DELETE: eliminar uno
+  eliminar(id) {
+    return this.#pedir("/instrumentos/" + id, { method: "DELETE" });
+  }
+}
+
+
 const form = document.getElementById("form-instrumento");
 const tipoSelect = document.getElementById("tipo");
 const camposMultimetro = document.getElementById("campos-multimetro");
@@ -335,3 +412,68 @@ function mostrarErrorAmbiente() {
   document.getElementById("loader").hidden = true;
   document.getElementById("error-api").hidden = false;
 }
+const api = new ApiClient("http://localhost:3000");
+
+// Consultar instrumentos a la API
+async function consultarInstrumentosAPI() {
+
+  const boton = document.getElementById("btn-consultar-api");
+  const mensaje = document.getElementById("mensaje-api");
+
+  // Evitar peticiones duplicadas
+  if (boton.disabled) return;
+
+  boton.disabled = true;
+  boton.textContent = "Cargando...";
+
+  mostrarLoader();
+
+  try {
+
+    // Esperar la respuesta del servidor
+    const datos = await api.obtenerTodos();
+
+    // Validar los datos recibidos
+    if (!Array.isArray(datos)) {
+      throw new Error("Los datos recibidos no son válidos.");
+    }
+
+    mensaje.textContent =
+      "Instrumentos recibidos: " + datos.length;
+
+    document.getElementById("loader").hidden = true;
+
+  } catch (error) {
+
+    // Mostrar errores
+    mostrarErrorAmbiente();
+    mensaje.textContent = "Error: " + error.message;
+
+  } finally {
+
+    // Habilitar nuevamente el botón
+    boton.disabled = false;
+    boton.textContent = "Consultar API";
+
+  }
+}
+
+
+// Crear botón y asignar evento
+document.addEventListener("DOMContentLoaded", function () {
+
+  const boton = document.createElement("button");
+
+  boton.id = "btn-consultar-api";
+  boton.type = "button";
+  boton.textContent = "Consultar API";
+
+  const mensaje = document.createElement("p");
+  mensaje.id = "mensaje-api";
+
+  document.body.appendChild(boton);
+  document.body.appendChild(mensaje);
+
+  // Evento que inicia la petición
+  boton.addEventListener("click", consultarInstrumentosAPI);
+});
