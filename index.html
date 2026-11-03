@@ -11,6 +11,25 @@
 
 <div id="resultado">% que requieren recalibración: --</div>
 
+<div id="ambiente">
+  <h2>Ambiente del taller</h2>
+
+  <div id="loader" hidden>Cargando datos...</div>
+
+  <p>Temperatura: <span id="temperatura">--</span> °C</p>
+
+  <p>Humedad: <span id="humedad">--</span> %</p>
+
+  <div id="error-api" hidden>
+    Error al consultar el clima.
+  </div>
+
+  <div id="aviso-humedad" hidden>
+    ¡Atención! La humedad supera el 65%.
+    Se recomienda recalibrar los instrumentos.
+  </div>
+</div>
+
 <h2>Agregar instrumento</h2>
 <form id="form-instrumento">
 
